@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12)
 project(tinkoff_api_userver CXX)
 
+set(USERVER_FEATURE_CRYPTOPP_BLAKE2 0)
+
 include(third_party/userver/cmake/SetupEnvironment.cmake)
 include(GNUInstallDirs)
 
