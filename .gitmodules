@@ -1,3 +1,6 @@
 [submodule "third_party/userver"]
 	path = third_party/userver
 	url = https://github.com/userver-framework/userver.git
+[submodule "third_party/tinkoff_invest_api"]
+	path = third_party/tinkoff_invest_api
+	url = https://github.com/Tinkoff/investAPI.git
