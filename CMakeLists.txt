@@ -16,10 +16,23 @@ add_library(${PROJECT_NAME}_objs OBJECT
 )
 # Grpc enable
 include(GrpcTargets)
+
 add_grpc_library(${PROJECT_NAME}_proto PROTOS handlers/hello.proto)
 
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core userver-postgresql ${PROJECT_NAME}_proto)
+add_grpc_library(${PROJECT_NAME}_api_proto 
+    INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/proto/invest_api"
+    PROTOS
+    invest_api/common.proto
+    invest_api/instruments.proto
+    invest_api/marketdata.proto
+    invest_api/operations.proto
+    invest_api/orders.proto
+    invest_api/sandbox.proto
+    invest_api/stoporders.proto
+    invest_api/users.proto
+)
 
+target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-core userver-postgresql ${PROJECT_NAME}_proto ${PROJECT_NAME}_api_proto)
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
