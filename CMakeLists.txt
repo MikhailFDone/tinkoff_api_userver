@@ -15,6 +15,10 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/hello.cpp
     src/hello_client.hpp
     src/hello_client.cpp
+    src/invest_api_users_service.hpp
+    src/invest_api_users_service.cpp
+    src/strategy.hpp
+    src/strategy.cpp
 )
 # Grpc enable
 include(GrpcTargets)
@@ -22,6 +26,7 @@ include(GrpcTargets)
 add_grpc_library(${PROJECT_NAME}_proto PROTOS handlers/hello.proto)
 
 add_grpc_library(${PROJECT_NAME}_api_proto 
+    SOURCE_PATH "${CMAKE_CURRENT_LIST_DIR}/proto"
     INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/proto/invest_api"
     PROTOS
     invest_api/common.proto

@@ -28,6 +28,8 @@ components_manager:
             # The TaskProcessor for blocking connection initiation
             task-processor: grpc-blocking-task-processor
 
+            auth-type: ssl
+
             # Optional channel parameters for gRPC Core
             # https://grpc.github.io/grpc/core/group__grpc__arg__keys.html
             channel-args: {}
@@ -36,6 +38,13 @@ components_manager:
             task-processor: main-task-processor
 
         hello-client:
+            endpoint: $hello-endpoint
+
+        invest-api-users-client:
+            endpoint: $invest-api-endpoint
+            token: $invest-api-token
+
+        strategy:
             endpoint: $hello-endpoint
 
         grpc-server:

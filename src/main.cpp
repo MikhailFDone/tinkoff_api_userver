@@ -9,6 +9,8 @@
 
 #include "hello.hpp"
 #include "hello_client.hpp"
+#include "invest_api_users_service.hpp"
+#include "strategy.hpp"
 
 int main(int argc, char* argv[]) {
   auto component_list =
@@ -22,6 +24,8 @@ int main(int argc, char* argv[]) {
 
   tinkoff_api_userver::AppendHello(component_list);
   tinkoff_api_userver::AppendHelloClient(component_list);
+  tinkoff_api_userver::AppendInvestApiUsersClient(component_list);
+  tinkoff_api_userver::AppendStrategy(component_list);
 
   return userver::utils::DaemonMain(argc, argv, component_list);
 }
