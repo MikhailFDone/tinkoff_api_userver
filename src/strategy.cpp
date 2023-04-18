@@ -12,6 +12,7 @@ namespace tinkoff_api_userver {
 void Strategy::OnAllComponentsLoaded() {
   std::cout << invest_api_users_.GetInfo().DebugString() << std::endl;
   std::cout << invest_api_users_.GetAccounts().accounts(0).name() << std::endl;
+  std::cout << invest_api_instruments_.GetFavorites().favorite_instruments(0).figi() << std::endl;
 }
 
 userver::yaml_config::Schema Strategy::GetStaticConfigSchema() {
