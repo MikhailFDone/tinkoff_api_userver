@@ -17,6 +17,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/hello_client.cpp
     src/invest_api_users_service.hpp
     src/invest_api_users_service.cpp
+    src/invest_api_instruments_service.hpp
+    src/invest_api_instruments_service.cpp
     src/strategy.hpp
     src/strategy.cpp
 )

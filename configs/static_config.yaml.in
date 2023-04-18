@@ -44,6 +44,10 @@ components_manager:
             endpoint: $invest-api-endpoint
             token: $invest-api-token
 
+        invest-api-instruments-client:
+            endpoint: $invest-api-endpoint
+            token: $invest-api-token
+
         strategy:
             endpoint: $hello-endpoint
 

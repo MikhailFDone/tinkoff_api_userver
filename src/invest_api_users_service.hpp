@@ -52,7 +52,7 @@ private:
 	std::unique_ptr<grpc::ClientContext> CreateGrpcContext() const;
 
 	userver::ugrpc::client::ClientFactory& client_factory_;
-	tinkoff::public_::invest::api::contract::v1::UsersServiceClient client_;
+	invest_api::UsersServiceClient client_;
 	std::string invest_api_token_;
 };
 
