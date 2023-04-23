@@ -30,6 +30,24 @@ public:
 		invest_api_token_(config["token"].As<std::string>())
 		{}
 
+    //INVEST_API_METHOD_IMPL(GetOperations)
+    INVEST_API_METHOD_CUSTOM_IMPL(GetPortfolio, PortfolioRequest, PortfolioResponse)
+    //INVEST_API_METHOD_IMPL(GetPositions)
+    //INVEST_API_METHOD_IMPL(GetWithdrawLimits)
+    //INVEST_API_METHOD_IMPL(GetBrokerReport)
+    //INVEST_API_METHOD_IMPL(GetDividendsForeignIssuer)
+    //INVEST_API_METHOD_IMPL(GetOperationsByCursor)
+
+    invest_api::PortfolioResponse GetPortfolio(std::string_view account_id, invest_api::PortfolioRequest::CurrencyRequest currency = invest_api::PortfolioRequest_CurrencyRequest_RUB)
+	{
+		invest_api::PortfolioRequest request;
+
+		request.set_account_id(account_id.data(), account_id.size());
+		request.set_currency(currency);
+
+		return GetPortfolioImpl(request);
+	}
+
 	static userver::yaml_config::Schema GetStaticConfigSchema();
 
 private:

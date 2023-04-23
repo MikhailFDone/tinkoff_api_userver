@@ -31,6 +31,15 @@ namespace invest_api = tinkoff::public_::invest::api::contract::v1;
 		return response; \
 	}
 
+#define INVEST_API_METHOD_CUSTOM_IMPL(method_name, request_type, response_type) \
+	const invest_api::response_type method_name##Impl(const invest_api::request_type& request) \
+	{ \
+		auto stream = client_.method_name(request, CreateGrpcContext()); \
+		invest_api::response_type response; \
+		response = stream.Finish(); \
+		return response; \
+	}
+
 class InvestApiServiceCommon
     : public userver::components::LoggableComponentBase {
 public:

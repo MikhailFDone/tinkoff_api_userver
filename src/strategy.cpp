@@ -17,7 +17,8 @@ void Strategy::OnAllComponentsLoaded() {
   auto my_accounts = invest_api_users_.GetAccounts().accounts();
   for (const auto& account : my_accounts)
   {
-    //auto portfolio = client.operations.get_portfolio(account_id=account.id)
+    auto portfolio = invest_api_operations_.GetPortfolio(account.id());
+    std::cout << portfolio.DebugString() << std::endl;
   }  
 }
 
