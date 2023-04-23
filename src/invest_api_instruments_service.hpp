@@ -3,26 +3,15 @@
 #include <invest_api/instruments_client.usrv.pb.hpp>
 #include <userver/components/component_list.hpp>
 #include <userver/components/impl/component_base.hpp>
-#include <userver/components/loggable_component_base.hpp>
-#include <userver/ugrpc/client/client_factory_component.hpp>
+#include "invest_api_service_common.hpp"
 
 namespace tinkoff_api_userver
 {
 
 namespace invest_api = tinkoff::public_::invest::api::contract::v1;
 
-#define INVEST_API_METHOD_IMPL(method_name) \
-	const invest_api::method_name##Response method_name() \
-	{ \
-		invest_api::method_name##Request request; \
-		auto stream = client_.method_name(request, CreateGrpcContext()); \
-		invest_api::method_name##Response response; \
-		response = stream.Finish(); \
-		return response; \
-	}
-
-#define INVEST_API_METHOD_INSTRUMENTS_IMPL(method_name) \
-	const invest_api::method_name##Response method_name() \
+#define INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(method_name) \
+	const invest_api::method_name##Response method_name##Impl() \
 	{ \
 		invest_api::InstrumentsRequest request; \
 		auto stream = client_.method_name(request, CreateGrpcContext()); \
@@ -31,15 +20,24 @@ namespace invest_api = tinkoff::public_::invest::api::contract::v1;
 		return response; \
 	}
 
+#define INVEST_API_METHOD_CUSTOM_IMPL(method_name, request_type, response_type) \
+	const invest_api::response_type method_name##Impl(const invest_api::request_type& request) \
+	{ \
+		auto stream = client_.method_name(request, CreateGrpcContext()); \
+		invest_api::response_type response; \
+		response = stream.Finish(); \
+		return response; \
+	}
+
 class InvestApiInstrumentsClient final
-    : public userver::components::LoggableComponentBase {
+    : public InvestApiServiceCommon {
 public:
 	static constexpr std::string_view kName = "invest-api-instruments-client";
 
 	InvestApiInstrumentsClient(
       const userver::components::ComponentConfig& config,
       const userver::components::ComponentContext& component_context)
-      : userver::components::LoggableComponentBase(config, component_context),
+      : InvestApiServiceCommon(config, component_context),
         client_factory_(
             component_context
                 .FindComponent<userver::ugrpc::client::ClientFactoryComponent>()
@@ -53,24 +51,24 @@ public:
 
 	INVEST_API_METHOD_IMPL(TradingSchedules)
 	//INVEST_API_METHOD_IMPL(BondBy)
-	INVEST_API_METHOD_INSTRUMENTS_IMPL(Bonds)
+	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Bonds)
 	INVEST_API_METHOD_IMPL(GetBondCoupons)
-	//INVEST_API_METHOD_IMPL(CurrencyBy)
-	INVEST_API_METHOD_INSTRUMENTS_IMPL(Currencies)
+	INVEST_API_METHOD_CUSTOM_IMPL(CurrencyBy, InstrumentRequest, CurrencyResponse)
+	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Currencies)
 	//INVEST_API_METHOD_IMPL(EtfBy)
-	INVEST_API_METHOD_INSTRUMENTS_IMPL(Etfs)
+	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Etfs)
 	//INVEST_API_METHOD_IMPL(FutureBy)
-	INVEST_API_METHOD_INSTRUMENTS_IMPL(Futures)
+	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Futures)
 	//INVEST_API_METHOD_IMPL(OptionBy)
-	INVEST_API_METHOD_INSTRUMENTS_IMPL(Options)
-	//INVEST_API_METHOD_IMPL(ShareBy)
-	INVEST_API_METHOD_INSTRUMENTS_IMPL(Shares)
+	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Options)
+	INVEST_API_METHOD_CUSTOM_IMPL(ShareBy, InstrumentRequest, ShareResponse)
+	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Shares)
 	INVEST_API_METHOD_IMPL(GetAccruedInterests)
 	INVEST_API_METHOD_IMPL(GetFuturesMargin)
-	//INVEST_API_METHOD_IMPL(GetInstrumentBy)
+	INVEST_API_METHOD_CUSTOM_IMPL(GetInstrumentBy, InstrumentRequest, InstrumentResponse)
 	INVEST_API_METHOD_IMPL(GetDividends)
-	//INVEST_API_METHOD_IMPL(GetAssetBy)
-	//INVEST_API_METHOD_IMPL(GetAssets)
+	INVEST_API_METHOD_CUSTOM_IMPL(GetAssetBy, AssetRequest, AssetResponse)
+	INVEST_API_METHOD_CUSTOM_IMPL(GetAssets, AssetsRequest, AssetsResponse)
 	INVEST_API_METHOD_IMPL(GetFavorites)
 	INVEST_API_METHOD_IMPL(EditFavorites)
 	INVEST_API_METHOD_IMPL(GetCountries)
@@ -78,10 +76,21 @@ public:
 	INVEST_API_METHOD_IMPL(GetBrands)
 	//INVEST_API_METHOD_IMPL(GetBrandBy)
 
+
+	invest_api::InstrumentResponse GetInstrumentBy(invest_api::InstrumentIdType instrument_id_type, std::string_view class_code, std::string_view id)
+	{
+		invest_api::InstrumentRequest request;
+
+		request.set_id_type(instrument_id_type);
+		request.set_class_code(class_code.data(), class_code.size());
+		request.set_id(id.data(), id.size());
+
+		return GetInstrumentByImpl(request);
+	}
+
 	static userver::yaml_config::Schema GetStaticConfigSchema();
 
 private:
-	std::unique_ptr<grpc::ClientContext> CreateGrpcContext() const;
 
 	userver::ugrpc::client::ClientFactory& client_factory_;
 	invest_api::InstrumentsServiceClient client_;

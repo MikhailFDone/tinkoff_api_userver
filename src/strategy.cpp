@@ -12,7 +12,13 @@ namespace tinkoff_api_userver {
 void Strategy::OnAllComponentsLoaded() {
   std::cout << invest_api_users_.GetInfo().DebugString() << std::endl;
   std::cout << invest_api_users_.GetAccounts().accounts(0).name() << std::endl;
-  std::cout << invest_api_instruments_.GetFavorites().favorite_instruments(0).figi() << std::endl;
+  std::cout << invest_api_instruments_.GetFavoritesImpl().favorite_instruments(0).figi() << std::endl;
+
+  auto my_accounts = invest_api_users_.GetAccounts().accounts();
+  for (const auto& account : my_accounts)
+  {
+    //auto portfolio = client.operations.get_portfolio(account_id=account.id)
+  }  
 }
 
 userver::yaml_config::Schema Strategy::GetStaticConfigSchema() {

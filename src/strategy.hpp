@@ -6,6 +6,7 @@
 #include <userver/ugrpc/client/client_factory_component.hpp>
 #include "invest_api_users_service.hpp"
 #include "invest_api_instruments_service.hpp"
+#include "invest_api_operations_service.hpp"
 
 namespace tinkoff_api_userver {
 
@@ -23,7 +24,9 @@ class Strategy final : public userver::components::LoggableComponentBase {
         invest_api_users_(
             component_context.FindComponent<InvestApiUsersClient>()),
         invest_api_instruments_(
-            component_context.FindComponent<InvestApiInstrumentsClient>()) {}
+            component_context.FindComponent<InvestApiInstrumentsClient>()),
+        invest_api_operations_(
+            component_context.FindComponent<InvestApiOperationsClient>()){}
 
   void OnAllComponentsLoaded() override;
 
@@ -33,6 +36,7 @@ class Strategy final : public userver::components::LoggableComponentBase {
   userver::ugrpc::client::ClientFactory& client_factory_;
   tinkoff_api_userver::InvestApiUsersClient& invest_api_users_;
   tinkoff_api_userver::InvestApiInstrumentsClient& invest_api_instruments_;
+  tinkoff_api_userver::InvestApiOperationsClient& invest_api_operations_;
 };
 
 void AppendStrategy(userver::components::ComponentList& component_list);
