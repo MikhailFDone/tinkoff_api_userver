@@ -7,6 +7,7 @@ include(third_party/userver/cmake/SetupEnvironment.cmake)
 include(GNUInstallDirs)
 
 add_subdirectory(third_party/userver)
+add_subdirectory(third_party/date)
 
 
 # Common sources
