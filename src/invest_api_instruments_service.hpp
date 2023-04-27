@@ -41,7 +41,7 @@ public:
 		{}
 
 	INVEST_API_METHOD_IMPL(TradingSchedules)
-	//INVEST_API_METHOD_IMPL(BondBy)
+	INVEST_API_METHOD_CUSTOM_IMPL(BondBy, InstrumentRequest, BondResponse)
 	INVEST_API_METHOD_WITH_INSTRUMENTS_REQUEST_IMPL(Bonds)
 	INVEST_API_METHOD_IMPL(GetBondCoupons)
 	INVEST_API_METHOD_CUSTOM_IMPL(CurrencyBy, InstrumentRequest, CurrencyResponse)
@@ -60,7 +60,7 @@ public:
 	INVEST_API_METHOD_IMPL(GetDividends)
 	INVEST_API_METHOD_CUSTOM_IMPL(GetAssetBy, AssetRequest, AssetResponse)
 	INVEST_API_METHOD_CUSTOM_IMPL(GetAssets, AssetsRequest, AssetsResponse)
-	INVEST_API_METHOD_IMPL(GetFavorites)
+	INVEST_API_METHOD(GetFavorites)
 	INVEST_API_METHOD_IMPL(EditFavorites)
 	INVEST_API_METHOD_IMPL(GetCountries)
 	INVEST_API_METHOD_IMPL(FindInstrument)
@@ -68,8 +68,10 @@ public:
 	//INVEST_API_METHOD_IMPL(GetBrandBy)
 
 
-	invest_api::InstrumentResponse GetInstrumentBy(invest_api::InstrumentIdType instrument_id_type, std::string_view class_code, std::string_view id)
+	invest_api::InstrumentResponse GetInstrumentBy(invest_api::InstrumentIdType instrument_id_type, std::string_view id, std::string_view class_code = "")
 	{
+		UASSERT((instrument_id_type == invest_api::InstrumentIdType::INSTRUMENT_ID_TYPE_TICKER) == !class_code.empty());
+		
 		invest_api::InstrumentRequest request;
 
 		request.set_id_type(instrument_id_type);
@@ -77,6 +79,30 @@ public:
 		request.set_id(id.data(), id.size());
 
 		return GetInstrumentByImpl(request);
+	}
+
+	invest_api::BondResponse BondBy(invest_api::InstrumentIdType instrument_id_type, std::string_view id, std::string_view class_code = "")
+	{
+		UASSERT((instrument_id_type == invest_api::InstrumentIdType::INSTRUMENT_ID_TYPE_TICKER) == !class_code.empty());
+
+		invest_api::InstrumentRequest request;
+
+		request.set_id_type(instrument_id_type);
+		request.set_class_code(class_code.data(), class_code.size());
+		request.set_id(id.data(), id.size());
+
+		return BondByImpl(request);
+	}
+
+	invest_api::GetBondCouponsResponse GetBondCoupons(std::string_view figi, Timestamp from, Timestamp to)
+	{
+		invest_api::GetBondCouponsRequest request;
+
+		request.set_figi(figi.data(), figi.size());
+		request.mutable_from()->CopyFrom(from);
+		request.mutable_to()->CopyFrom(to);
+
+		return GetBondCouponsImpl(request);
 	}
 
 	static userver::yaml_config::Schema GetStaticConfigSchema();

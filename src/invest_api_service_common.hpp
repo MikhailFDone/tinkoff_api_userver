@@ -10,6 +10,7 @@ namespace tinkoff_api_userver
 {
 
 namespace invest_api = tinkoff::public_::invest::api::contract::v1;
+using Timestamp = google::protobuf::Timestamp;
 
 #define INVEST_API_METHOD(method_name) \
 	const invest_api::method_name##Response method_name() \
@@ -22,9 +23,8 @@ namespace invest_api = tinkoff::public_::invest::api::contract::v1;
 	}
 
 #define INVEST_API_METHOD_IMPL(method_name) \
-	const invest_api::method_name##Response method_name##Impl() \
+	const invest_api::method_name##Response method_name##Impl(const invest_api::method_name##Request& request) \
 	{ \
-		invest_api::method_name##Request request; \
 		auto stream = client_.method_name(request, CreateGrpcContext()); \
 		invest_api::method_name##Response response; \
 		response = stream.Finish(); \
