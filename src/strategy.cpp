@@ -12,6 +12,20 @@
 
 namespace tinkoff_api_userver {
 
+struct BondCoupon
+{
+    std::string figi;
+    std::string name;
+    Timestamp coupon_date;
+    invest_api::MoneyValue pay_one_bond;
+    invest_api::Quotation quantity;
+
+    bool operator < (const BondCoupon& other) const
+    {
+        return coupon_date < other.coupon_date;
+    }
+};
+
 void Strategy::OnAllComponentsLoaded() {
   std::cout << invest_api_users_.GetInfo().DebugString() << std::endl;
   std::cout << invest_api_users_.GetAccounts().accounts(0).name() << std::endl;
@@ -47,30 +61,44 @@ void Strategy::OnAllComponentsLoaded() {
     if (bonds_figi.empty())
         continue;
     
+    std::vector<BondCoupon> bond_coupons;
+
     for (const auto& bond_figi : bonds_figi)
     {
         auto bond = invest_api_instruments_.BondBy(invest_api::InstrumentIdType::INSTRUMENT_ID_TYPE_FIGI, bond_figi, "");
         auto bond_coupons_info = invest_api_instruments_.GetBondCoupons(bond_figi, today_ts, next_month_date_ts);
         
-        std::cout << bond.DebugString() << std::endl;
-        std::cout << bond_coupons_info.DebugString() << std::endl;
+        //std::cout << bond.DebugString() << std::endl;
+        //std::cout << bond_coupons_info.DebugString() << std::endl;
 
+        auto quantity = invest_api::Quotation();
+
+        for (const auto& instrument : positions)
+        {
+            if (instrument.instrument_type() == "bond" && instrument.figi() == bond_figi)
+            {
+                quantity = instrument.quantity();
+            }
+        }
+
+        for (const auto& bond_coupon_info : bond_coupons_info.events())
+        {
+            bond_coupons.emplace_back(BondCoupon{bond_figi, bond.instrument().name(), bond_coupon_info.coupon_date(), bond_coupon_info.pay_one_bond(), quantity});
+        }
     }
 
-   /*
-   for bond_figi in bonds_figi:
-                bond = client.instruments.bond_by(id_type=t_invest.InstrumentIdType.INSTRUMENT_ID_TYPE_FIGI, id=bond_figi)
-                bond_coupons_info = client.instruments.get_bond_coupons(figi=bond_figi, from_=today, to=next_month_date)
-                
-                quantity = t_invest.Quotation()
+    std::sort(bond_coupons.begin(), bond_coupons.end());
+    std::string replay_string;
 
-                for instrument_pos in portfolio.positions:
-                    if instrument_pos.instrument_type == "bond" and instrument_pos.figi == bond_figi:
-                        quantity = instrument_pos.quantity.units
+    for (const auto& bond_coupon : bond_coupons)
+    {
+        double pay_one_bond = bond_coupon.pay_one_bond.units() + bond_coupon.pay_one_bond.nano() / 1e9;
+        std::string date = google::protobuf::util::TimeUtil::ToString(bond_coupon.coupon_date);
+        replay_string += fmt::format("\t{}: {} {} * {} = {} {}\n",
+            date, bond_coupon.name, bond_coupon.quantity.units(), pay_one_bond, bond_coupon.quantity.units() * pay_one_bond, bond_coupon.pay_one_bond.currency());
+    }
 
-                for bond_coupon_info in bond_coupons_info.events:
-                    bond_coupons.append(BondCoupon(bond_figi, bond.instrument.name, bond_coupon_info.coupon_date.date(), bond_coupon_info.pay_one_bond, quantity))
-   */
+    std::cout << replay_string << std::endl;
   }  
 }
 
