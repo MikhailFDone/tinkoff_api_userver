@@ -52,8 +52,16 @@ components_manager:
             endpoint: $invest-api-endpoint
             token: $invest-api-token
 
+        invest-api-marketdata-stream-client:
+            endpoint: $invest-api-endpoint
+            token: $invest-api-token
+
         strategy:
             endpoint: $hello-endpoint
+
+        strategy-stream:
+            endpoint: $hello-endpoint
+            task-processor: main-task-processor
 
         grpc-server:
             port: 8081
@@ -76,7 +84,8 @@ components_manager:
         dynamic-config:                      # Dynamic config storage options, do nothing
             fs-cache-path: ''
         dynamic-config-fallbacks:            # Load options from file and push them into the dynamic config storage.
-            fallback-path: @CONFIG_FALLBACK_PATH@
+            # fallback-path: @CONFIG_FALLBACK_PATH@
+            fallback-path: ../configs/dynamic_config_fallback.json
         testsuite-support: {}
 
         http-client:

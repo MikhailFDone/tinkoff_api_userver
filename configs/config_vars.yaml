@@ -10,4 +10,7 @@ server-grpc-port: 8081
 
 hello-endpoint: '[::1]:8081'
 
+invest-api-endpoint: 'invest-public-api.tinkoff.ru:443'
+invest-api-token: '<PLACE-YOUR-TOKEN>'
+
 dbconnection: 'postgresql://tinkoff_api_userver_user:password@localhost:5432/tinkoff_api_userver_db_1'

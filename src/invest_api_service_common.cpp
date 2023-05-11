@@ -12,7 +12,7 @@ std::unique_ptr<grpc::ClientContext> InvestApiServiceCommon::CreateGrpcContext()
 	// Deadline must be set manually for each RPC
 	auto context = std::make_unique<grpc::ClientContext>();
 	context->AddMetadata("authorization", "Bearer " + invest_api_token_);
-	context->set_deadline(userver::engine::Deadline::FromDuration(std::chrono::seconds{20}));
+	context->set_deadline(userver::engine::Deadline::FromDuration(std::chrono::seconds{600}));
 	context->set_wait_for_ready(true);
 
 	return context;

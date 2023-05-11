@@ -9,9 +9,8 @@
 
 #include "hello.hpp"
 #include "hello_client.hpp"
-#include "invest_api_users_service.hpp"
-#include "invest_api_instruments_service.hpp"
 #include "strategy.hpp"
+#include "strategy_stream.hpp"
 
 int main(int argc, char* argv[]) {
   auto component_list =
@@ -28,7 +27,10 @@ int main(int argc, char* argv[]) {
   tinkoff_api_userver::AppendInvestApiUsersClient(component_list);
   tinkoff_api_userver::AppendInvestApiInstrumentsClient(component_list);
   tinkoff_api_userver::AppendInvestApiOperationsClient(component_list);
+  //tinkoff_api_userver::AppendInvestApiMarketdataClient(component_list);
+  tinkoff_api_userver::AppendInvestApiMarketdataStreamClient(component_list);
   tinkoff_api_userver::AppendStrategy(component_list);
+  tinkoff_api_userver::AppendStrategyStream(component_list);
 
   return userver::utils::DaemonMain(argc, argv, component_list);
 }

@@ -24,8 +24,12 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/invest_api_instruments_service.cpp
     src/invest_api_operations_service.hpp
     src/invest_api_operations_service.cpp
+    src/invest_api_marketdata_service.hpp
+    src/invest_api_marketdata_service.cpp
     src/strategy.hpp
     src/strategy.cpp
+    src/strategy_stream.hpp
+    src/strategy_stream.cpp
 )
 # Grpc enable
 include(GrpcTargets)
